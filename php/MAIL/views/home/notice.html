@@ -1,0 +1,28 @@
+<?php 
+
+$_notice = "select
+	      u.first_name as first_name,
+	      u.last_name as last_name,
+	      u.email as email,
+	      n.id as id,
+	      n.name as name,
+	      n.created_at as created_at,
+	      n.updated_at as updated_at
+	    from
+	      Users u,
+	      Notices n
+	    where
+	      n.user_id = u.id";
+
+$_notice_result = mysql_query($_notice);
+while ($row = mysql_fetch_assoc($_notice_result))
+      $_notices[] = $row;
+?>
+<h5 class="well well-sm" style="background:#f8f8f8">Duyurular</h5>
+<div class="list-group">
+<?php
+if (isset($_notices))
+	foreach ($_notices as $notice)
+		echo "<a href='#' class='list-group-item' style='overflow:auto'>".$notice['name']."</a>";
+?>
+</div>

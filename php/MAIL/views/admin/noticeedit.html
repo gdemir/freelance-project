@@ -1,0 +1,9 @@
+<?php
+$id = $_GET['id'];
+$notice = mysql_fetch_assoc(mysql_query("select * from Notices where id='$id'"));
+?>
+<form class="login-form" action="<?php echo $PATH; ?>/controllers/admin/noticeupdate.php" accept-charset="UTF-8" method="post">
+  <input type="hidden" value="<?php echo $notice['id']; ?>" name="id" id="id"/>
+  <input type="text" value="<?php echo $notice['name']; ?>" class="form-control" size="50" name="name" id="name" />
+  <button type="submit" class="btn btn-primary">Güncelle</button>
+</form> 

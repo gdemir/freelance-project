@@ -1,0 +1,44 @@
+<?php
+$id = $_GET['id'];
+
+$_user = "select
+	    ut.name as uname,
+	    g.name as gname,
+	    d.name as dname,
+	    u.first_name as first_name,
+	    u.last_name as last_name,
+	    u.email as email,
+	    u.password as password,
+	    u.created_at as created_at,
+	    u.updated_at as updated_at
+	  from
+	    User_Types ut,
+	    Users u,
+	    Genders g,
+	    Departments d
+	  where
+	    u.department_id = d.id and
+	    u.gender_id = g.id and
+	    u.user_type_id = ut.id and
+	    u.id = '" . $id . "'";
+
+$user = mysql_fetch_assoc(mysql_query($_user));
+?>
+<input type="text" placeholder="<?php echo $user['first_name']; ?>" class="form-control" size="50" name="first_name" id="first_name" disabled/>
+<input type="text" placeholder="<?php echo $user['last_name']; ?>" class="form-control" size="50" name="last_name" id="last_name" disabled/>
+<input type="text" placeholder="<?php echo $user['email']; ?>" class="form-control" size="50" name="email" id="email" disabled/>
+<input type="text" placeholder="<?php echo $user['password']; ?>" class="form-control" size="50" name="password" id="password" disabled/>
+<input type="text" placeholder="<?php echo $user['uname']; ?>" class="form-control" size="50" name="uname" id="uname" disabled/>
+<input type="text" placeholder="<?php echo $user['dname']; ?>" class="form-control" size="50" name="dname" id="dname" disabled/>
+<input type="text" placeholder="<?php echo $user['gname']; ?>" class="form-control" size="50" name="gname" id="gname" disabled/>
+
+
+<form action="<?php echo $PATH; ?>/controllers/admin/userdel.php" method="post">
+<a  class="btn btn-primary"
+href="<?php echo $PATH; ?>/admin/index.php?yield=useredit&id=<?php echo $id; ?>">
+Düzenle
+</a>
+<input type="hidden" value="<?php echo $id; ?>" id="id" name="id"/>
+<input type="submit" class="btn btn-danger" value="sil"
+onClick="return confirm('Bu kullanıcıyı sildiğiniz takdirde yapmış ise mail alma, verme duyuru yapma bilgileri de silinecektir. Silmek istediğinizden emin misiniz?');"/>
+</form>

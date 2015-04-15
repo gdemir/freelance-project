@@ -1,0 +1,70 @@
+<?php
+
+$_notice = "select
+	      u.email as email,
+	      n.id as id,
+	      n.name as name,
+	      n.created_at as created_at,
+	      n.updated_at as updated_at
+	    from
+	      Users u,
+	      Notices n
+	    where
+	      n.user_id = u.id";
+
+$_notice_result = mysql_query($_notice);
+for ($_notices = array(); $row = mysql_fetch_assoc($_notice_result);)
+      array_push($_notices, $row);
+?>
+<div class="well well-sm">
+  <a class="btn btn-primary" href="<?php echo $PATH ;?>/admin/index.php?yield=noticenew">
+  Duyuru Ekle
+  </a>
+</div>
+<link type="text/css" rel="stylesheet" href="<?php echo $PATH; ?>/assets/css/datatable.css"/>
+<script type="text/javascript" src="<?php echo $PATH; ?>/assets/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+      oTable = $('#example').dataTable({
+        "bJQueryUI": true,
+        "sPaginationType": "full_numbers"
+      });
+  });
+</script>
+<div class="dt_example module">
+<table class="table table-bordered table-hover display" id="example" cellpadding="0" cellspacing="0" border="0">
+  <thead>
+    <tr>
+      <th>İd</th>
+      <th>Gönderen</th>
+      <th>Duyuru</th>
+      <th>Oluştu</th>
+      <th>Düzenlendi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php
+      if (!is_null($_notices))
+      foreach ($_notices as $notice) {
+      echo "<tr href='" . $PATH . "/admin/index.php?yield=notice&id=".$notice['id']."'>
+	    <td>" . $notice['id'] . "</td>
+	    <td>" . $notice['email'] . "</td>
+	    <td>" . $notice['name'] . "</td>
+   	    <td>" . $notice['created_at'] . "</td>
+   	    <td>" . $notice['updated_at'] . "</td>
+	    </td>
+	    </tr>";
+      }
+    ?>
+  </tbody>
+</table>
+</div>
+<script>
+$(document).ready(function(){
+    $('table tbody tr').click(function(){
+        window.location = $(this).attr('href');
+        return false;
+    });
+});
+</script>

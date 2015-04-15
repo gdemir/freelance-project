@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="tr" lang="tr">
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <link href="" rel="alternate" title="" type="application/atom+xml" />
+  <link rel="stylesheet" href="../assets/css/syntax.css" type="text/css" />
+  <link href='http://fonts.googleapis.com/css?family=Monda' rel='stylesheet' type='text/css'>
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="http://gdemir.me/assets/js/html5shiv.js"></script>
+    <script src="http://gdemir.me/assets/js/respond.min.js"></script>
+   <![endif]-->
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="../assets/js/bootstrap.min.js"></script>
+
+<!-- selectize -->
+  <link rel="stylesheet" href="../assets/css/selectize.styles.css" data-theme="default">
+  <link rel="stylesheet" href="../assets/css/selectize.bootstrap3.css" data-theme="default">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+  <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+  <script src="../assets/js/selectize.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <!-- selectize end -->
+</head>
+<body>
+  <div class="container">
+    <?php include 'admin_navbar.html'; ?>
+    <div class="well">
+      <?php include 'notice.html'; clear_notice_session(); ?>
+      <div class="row">
+	<div class="col-xs-6 col-md-6"><h4>ADMIN Paneli</h4></div>
+	<div class="col-xs-5 col-md-6">
+		<?php
+			$_mails_result = mysql_query("select * from Mails");
+			for ($_mails = array(); $row = mysql_fetch_assoc($_mails_result);)
+				array_push($_mails, $row);
+		?>
+		<select id="select-beast" class="form-control">
+		<option value="">Bir konu ara...</option>
+		<?php
+			foreach ($_mails as $mail)
+				echo "<option value='" . $PATH  . "/admin/index.php?yield=mail&id=" . $mail["id"] . "'>" .$mail["subject"] . "</option>";
+		?>
+		</select>
+		<script>
+		$('#select-beast').selectize({
+			create: false,
+			sortField: 'text'
+		});
+		$('#select-beast').change(function () {
+			console.log($(this).val());
+			$(location).attr("href", $(this).val());
+		});
+		</script>
+	</div>	
+	
+      </div>
+      <div class="row">
+	<hr>
+	<div class="col-xs-2 col-md-2">
+	  <ul class="nav nav-pills nav-stacked" role="ablist">
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/admin/index.php?yield=index" class="fa fa-home">
+		Home Page
+	    </a>
+	    </li>
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/admin/index.php?yield=users" class="fa fa-users">
+		Users
+	      </a>
+	    </li>
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/admin/index.php?yield=mails" class="fa fa-envelope">
+		Mails
+	      </a>
+	    </li>
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/admin/index.php?yield=notices" class="fa fa-bullhorn">
+		Notices
+	      </a>
+	    </li>
+	  </ul>
+	</div>
+	<div class="col-xs-10 col-md-10">
+	  <?php
+		  $yield = isset($_GET['yield']) ? $_GET['yield'] : null;
+
+		  switch (true) {
+			  case in_array($yield, array(null, 'index')):
+				include('../views/admin/index.html');
+				break;
+			  case $yield == 'login':
+				include('../views/admin/login.html');
+				break;
+			  case $yield == 'user':
+				include('../views/admin/user.html');
+				break;
+			  case $yield == 'users':
+				include('../views/admin/users.html');
+				break;
+			  case $yield == 'usernew':
+				include('../views/admin/usernew.html');
+				break;
+			  case $yield == 'useredit':
+				include('../views/admin/useredit.html');
+				break;
+			  case $yield == 'mail':
+				include('../views/admin/mail.html');
+				break;
+			  case $yield == 'mails':
+				include('../views/admin/mails.html');
+				break;
+			  case $yield == 'mailnew';
+				include('../views/admin/mailnew.html');
+				break;
+			  case $yield == 'mailedit':
+				include('../views/admin/mailedit.html');
+				break;
+			  case $yield == 'notice':
+				include('../views/admin/notice.html');
+				break;
+			  case $yield == 'notices':
+				include('../views/admin/notices.html');
+				break;
+			  case $yield == 'noticenew':
+				include('../views/admin/noticenew.html');
+				break;
+			  case $yield == 'noticeedit':
+				include('../views/admin/noticeedit.html');
+				break;
+			  default:
+				include('404.html');
+		  }
+	  ?>
+        </div>
+      </div>
+    </div>
+    <?php include 'footer.html'; ?>
+  </div>
+  </body>
+</html>

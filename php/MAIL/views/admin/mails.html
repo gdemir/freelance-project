@@ -1,0 +1,78 @@
+<?php
+
+$_mail = "select
+	   group_concat(receive_user.email SEPARATOR ',') as receive_email, 
+	   sender_user.email as sender_email,
+	   m.id as id,
+	   m.subject as subject,
+	   m.content as content,
+	   m.created_at as created_at,
+	   m.updated_at as updated_at
+	 from
+	   Users sender_user,
+	   Users receive_user,
+	   Mails m,
+	   Recipients r
+	 where
+	   m.user_id = sender_user.id and
+	   r.mail_id = m.id and
+	   r.user_id = receive_user.id 
+	 group by m.id";
+
+$_mail_result = mysql_query($_mail);
+for ($_mails = array(); $row = mysql_fetch_assoc($_mail_result);)
+      array_push($_mails, $row);
+?>
+<link type="text/css" rel="stylesheet" href="<?php echo $PATH; ?>/assets/css/datatable.css"/>
+<script type="text/javascript" src="<?php echo $PATH; ?>/assets/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+      oTable = $('#example').dataTable({
+        "bJQueryUI": true,
+        "sPaginationType": "full_numbers"
+      });
+  });
+</script>
+
+<div class="dt_example module">
+<table class="table table-bordered table-hover display" id="example" cellpadding="0" cellspacing="0" border="0">
+  <thead>
+    <tr>
+      <th>İd</th>
+      <th>Gönderen</th>
+      <th>Alıcı</th>
+      <th>Konu</th>
+      <th>İçerik</th>
+      <th>Oluştu</th>
+      <th>Düzenlendi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php 
+      if (!is_null($_mails))
+      foreach ($_mails as $mail) {
+      if (strlen($mail['receive_email'])>25)
+	     $mail['receive_email'] = substr($mail['receive_email'],0,25) . "...";
+      echo "<tr href='" . $PATH . "/admin/index.php?yield=mail&id=" . $mail['id'] . "'>
+	    <td>" . $mail['id'] .            "</td>
+	    <td>" . $mail['sender_email'] .  "</td>
+	    <td>" . $mail['receive_email'] . "</td>
+	    <td>" . $mail['subject'] .       "</td>
+	    <td>" . $mail['content'] .       "</td>
+   	    <td>" . $mail['created_at'] .    "</td>
+   	    <td>" . $mail['updated_at'] .    "</td>
+	    </tr>";
+      }
+    ?>
+  </tbody>
+</table>
+</div>
+<script>
+$(document).ready(function(){
+    $('table tbody tr').click(function(){
+        window.location = $(this).attr('href');
+        return false;
+    });
+});
+</script>

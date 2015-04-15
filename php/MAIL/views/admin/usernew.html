@@ -1,0 +1,43 @@
+<?php
+
+$_user_type_id_result = mysql_query("select * from User_Types");
+while ($row = mysql_fetch_assoc($_user_type_id_result))
+      $_user_type_ids[] = $row;
+
+$_department_result = mysql_query("select * from Departments");
+while ($row = mysql_fetch_assoc($_department_result))
+      $_departments[] = $row;
+
+$_gender_result = mysql_query("select * from Genders");
+while ($row = mysql_fetch_assoc($_gender_result))
+      $_genders[] = $row;
+
+?>
+
+<form class="login-form" action="<?php echo $PATH; ?>/controllers/admin/usernew.php" accept-charset="UTF-8" method="post">
+  <input type="text" placeholder="Ad" class="form-control" size="50" name="first_name" id="first_name" />
+  <input type="text"  placeholder="Soyad" class="form-control" size="50" name="last_name" id="last_name" />
+  <input type="text" placeholder="Email" class="form-control" size="50" name="email" id="email" />
+  <input type="text" placeholder="Parola" class="form-control" size="50" name="password" id="password" />
+
+<select class="form-control" id="user_type_id" name="user_type_id">
+<?php
+	foreach ($_user_type_ids as $user_type_id)
+		echo "<option value='" . $user_type_id['id'] . "' >" . $user_type_id['name'] . "</option>";
+?>
+</select>
+<select class="form-control" id="department_id" name="department_id">
+<?php
+	foreach ($_departments as $department)
+		echo "<option value='" . $department['id'] . "' >" . $department['name'] . "</option>";
+?>
+</select>
+<select class="form-control" id="gender_id" name="gender_id">
+<?php
+	foreach ($_genders as $gender)
+		echo "<option value='" . $gender['id'] . "' >" . $gender['name'] . "</option>";
+?>
+</select>
+
+  <button type="submit" class="btn btn-primary">Oluştur</button>
+</form> 

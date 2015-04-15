@@ -1,0 +1,25 @@
+body { background: url("../img/bg.png") repeat scroll 0 0 transparent; font-family: 'Monda', sans-serif; }
+hr { margin: 10px 10px 5px 0px; }
+.nav-list li { line-height: 1.3em; }
+.well { background: none repeat scroll 0 0 rgba(255, 255, 255, 0.7); box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.1); }
+.well:not(:first-child) { margin-bottom: 0px;}
+.sidebar-nav { min-height: 425px; }
+a:hover { text-decoration: none; }
+h1, h2, h3, h4, h5 {
+	font-weight: normal;
+	text-rendering: optimizelegibility;
+	font-family: 'Advent Pro', sans-serif;
+}
+h3 { font-size: 15px; }
+/* List h4 */
+h4 {
+	background: url("../img/triangular.png") no-repeat scroll left center transparent;
+	margin-bottom: 1em;
+	margin-top: 2em;
+	padding-left: 2em;
+	padding-top: 0;
+}
+.list-group { margin-bottom: 0px; }
+.label { line-height: 2.3em; }
+ol, ul { list-style: true; }
+

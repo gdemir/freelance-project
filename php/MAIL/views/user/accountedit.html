@@ -1,0 +1,29 @@
+<?php
+$user = mysql_fetch_assoc(
+		mysql_query("select
+			      ut.name as uname,
+			      d.name as dname,
+			      g.name as gname,
+			      u.email as email,
+			      u.first_name as first_name,
+			      u.last_name as last_name,
+			      u.password as password
+			     from
+			      Users u, User_Types ut, Departments d, Genders g
+			     where
+			      u.gender_id = g.id and
+			      u.department_id = d.id and
+			      u.user_type_id = ut.id and
+			      u.id = '" . $_SESSION['id'] . "'"));
+?>
+<form class="login-form" action="<?php echo $PATH ;?>/controllers/user/accountupdate.php" accept-charset="UTF-8" method="post">
+  <input type="text" value="<?php echo $user['uname']; ?>" class="form-control" size="50" name="uname" id="uname" disabled/>
+  <input type="text" value="<?php echo $user['dname']; ?>" class="form-control" size="50" name="dname" id="dname" disabled/>
+  <input type="text" value="<?php echo $user['gname']; ?>" class="form-control" size="50" name="gname" id="gname" disabled/>
+  <input type="text" value="<?php echo $user['email']; ?>" class="form-control" size="50" name="email" id="email" disabled/>
+
+  <input type="text" value="<?php echo $user['first_name']; ?>" class="form-control" size="50" name="first_name" id="first_name" />
+  <input type="text" value="<?php echo $user['last_name']; ?>" class="form-control" size="50" name="last_name" id="last_name" />
+  <input type="text" value="<?php echo $user['password']; ?>" class="form-control" size="50" name="password" id="password" />
+  <button type="submit" class="btn btn-primary">Güncelle</button>
+</form> 

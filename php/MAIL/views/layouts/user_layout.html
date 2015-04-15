@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="tr" lang="tr">
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <link href="" rel="alternate" title="" type="application/atom+xml" />
+  <link rel="stylesheet" href="../assets/css/syntax.css" type="text/css" />
+  <link href='http://fonts.googleapis.com/css?family=Monda' rel='stylesheet' type='text/css'>
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="http://gdemir.me/assets/js/html5shiv.js"></script>
+    <script src="http://gdemir.me/assets/js/respond.min.js"></script>
+   <![endif]-->
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="../assets/js/bootstrap.min.js"></script>
+
+  <!-- selectize -->
+  <link rel="stylesheet" href="../assets/css/selectize.styles.css" data-theme="default">
+  <link rel="stylesheet" href="../assets/css/selectize.bootstrap3.css" data-theme="default">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+  <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+  <script src="../assets/js/selectize.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <!-- selectize end -->
+</head>
+<body>
+     <?php
+      $_outbox = "select
+		    group_concat(receive_user.email SEPARATOR ',') as email, 
+		    m.id as id,
+		    m.subject as subject,
+		    m.content as content,
+		    m.created_at
+		  from
+		    Users sender_user,
+		    Users receive_user,
+		    Mails m,
+		    Recipients r
+		  where
+		    sender_user.id = '" . $_SESSION['id'] . "' and
+		    m.user_id = sender_user.id and
+		    r.mail_id = m.id and
+		    r.user_id = receive_user.id 
+		  group by m.id";
+
+      $_inbox = "select
+		   sender_user.email as email,
+		   m.id as id,
+		   m.subject as subject,
+		   m.content as content,
+		   m.created_at
+		 from
+		   Users sender_user,
+		   Users receive_user,
+		   Mails m,
+		   Recipients r
+		 where
+		    m.user_id = sender_user.id and
+		    m.id = r.mail_id and
+		    r.user_id = receive_user.id and
+		    receive_user.id = '" . $_SESSION['id'] . "'";
+	
+      
+	$_mails = "select
+		    m.id as id,
+		    m.subject as subject,
+		    m.user_id as sender_id
+		   from
+		    Mails m,
+		    Recipients r
+		   where
+		    (m.user_id = '" . $_SESSION['id'] . "' or r.user_id = '" . $_SESSION['id'] . "' ) and
+		    r.mail_id = m.id
+		  group by m.id";
+
+      $_mails_result = mysql_query($_mails);
+      for ($_user_mails = array(); $row = mysql_fetch_assoc($_mails_result);)
+	      array_push($_user_mails, $row);
+
+      $_inbox_result = mysql_query($_inbox);
+      for ($_inbox_mails = array(); $row = mysql_fetch_assoc($_inbox_result);)
+	      array_push($_inbox_mails, $row);
+
+      $_outbox_result = mysql_query($_outbox);
+      for ($_outbox_mails = array(); $row = mysql_fetch_assoc($_outbox_result);)
+	      array_push($_outbox_mails, $row);
+      ?>
+  <div class="container">
+    <?php include 'user_navbar.html'; ?>
+    <div class="well">
+      <?php include 'notice.html'; clear_notice_session(); ?>
+      <div class="row">
+	<div class="col-xs-6 col-md-6"><h4>MAIL Paneli</h4></div>
+	<div class="col-xs-5 col-md-6">
+		<select id="select-beast" class="form-control">
+		<option value="">Bir konu ara...</option>
+		<?php
+			foreach ($_user_mails as $mail)
+			if ($mail["sender_id"] == $_SESSION["id"]) 
+				echo "<option value='" . $PATH . "/user/index.php?yield=outmail&id=" . $mail["id"] . "'>" .$mail["subject"] . "</option>";
+			else
+				echo "<option value='" . $PATH . "/user/index.php?yield=inmail&id=" . $mail["id"] . "'>" .$mail["subject"] . "</option>";
+		?>
+		</select>
+		<script>
+		$('#select-beast').selectize({
+			create: false,
+			sortField: 'text'
+		});
+		$('#select-beast').change(function () {
+			console.log($(this).val());
+			$(location).attr("href", $(this).val());
+		});
+		</script>
+	</div>	
+	<br/><br/><br/><br/>
+	<hr>
+      </div>
+       <div class="row">
+	<div class="col-xs-3 col-md-3">
+	  <ul class="nav nav-pills nav-stacked" role="ablist">
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/user/index.php?yield=index" class="fa fa-home">
+		Anasayfa
+	      </a>
+	    </li>
+
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/user/index.php?yield=write" class="fa fa-edit">
+		Yaz
+	      </a>
+	    </li>
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/user/index.php?yield=inbox" class="fa fa-inbox">
+		Gelen Kutusu
+		<span class="badge"><?php echo count($_inbox_mails) ?></span>
+	      </a>
+	    </li>
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/user/index.php?yield=outbox" class="fa fa-send">
+		Giden Kutusu
+		<span class="badge"><?php echo count($_outbox_mails) ?></span>
+	      </a>
+	    </li>
+	  </ul>
+	</div>
+	<div class="col-xs-8 col-md-9">
+	  <?php
+		  $yield = isset($_GET['yield']) ? $_GET['yield'] : null;
+
+		  switch (true) {
+			  case in_array($yield, array(null, 'index')):
+				include('../views/user/index.html');
+				break;
+			  case $yield == 'new':
+				include('../views/user/new.html');
+				break;
+			  case $yield == 'login':
+				include('../views/user/login.html');
+				break;
+			  case $yield == 'inmail':
+				include('../views/user/inmail.html');
+				break;
+			  case $yield == 'outmail':
+				include('../views/user/outmail.html');
+				break;
+			  case $yield == 'inbox':
+				include('../views/user/inbox.html');
+				break;
+			  case $yield == 'outbox':
+				include('../views/user/outbox.html');
+				break;
+			  case $yield == 'write':
+				include('../views/user/write.html');
+				break;
+			  case $yield == 'accountshow':
+				include('../views/user/accountshow.html');
+				break;
+			  case $yield == 'accountedit':
+				include('../views/user/accountedit.html');
+				break;
+			  default:
+				include('404.html');
+		  }
+	  ?>
+
+        </div>
+      </div>
+    </div>
+    <?php include 'footer.html'; ?>
+  </div>
+  </body>
+</html>
