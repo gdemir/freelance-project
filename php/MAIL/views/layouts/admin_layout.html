@@ -26,6 +26,11 @@
   <script src="../assets/js/selectize.js"></script>
   <script src="../assets/js/main.js"></script>
   <!-- selectize end -->
+  <!-- source: http://summernote.org/ -->
+  <link rel="stylesheet" href="../assets/css/summernote.css" type="text/css"/>
+  <script src="../assets/js/summernote.min.js"></script>
+  <script src="../assets/js/summernote-tr-TR.js"></script>
+  <!-- summernote end -->
 </head>
 <body>
   <div class="container">
@@ -44,7 +49,9 @@
 		<option value="">Bir konu ara...</option>
 		<?php
 			foreach ($_mails as $mail)
-				echo "<option value='" . $PATH  . "/admin/index.php?yield=mail&id=" . $mail["id"] . "'>" .$mail["subject"] . "</option>";
+				echo "<option value='" . $PATH  . "/admin/index.php?yield=mail&id=" . $mail["id"] . "'>"
+					. $mail["subject"] .
+				           "</option>";
 		?>
 		</select>
 		<script>
@@ -84,6 +91,11 @@
 		Notices
 	      </a>
 	    </li>
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/admin/index.php?yield=documents" class="fa fa-th-list">
+		Report Lists
+	      </a>
+	    </li>
 	  </ul>
 	</div>
 	<div class="col-xs-10 col-md-10">
@@ -91,47 +103,14 @@
 		  $yield = isset($_GET['yield']) ? $_GET['yield'] : null;
 
 		  switch (true) {
-			  case in_array($yield, array(null, 'index')):
-				include('../views/admin/index.html');
-				break;
-			  case $yield == 'login':
-				include('../views/admin/login.html');
-				break;
-			  case $yield == 'user':
-				include('../views/admin/user.html');
-				break;
-			  case $yield == 'users':
-				include('../views/admin/users.html');
-				break;
-			  case $yield == 'usernew':
-				include('../views/admin/usernew.html');
-				break;
-			  case $yield == 'useredit':
-				include('../views/admin/useredit.html');
-				break;
-			  case $yield == 'mail':
-				include('../views/admin/mail.html');
-				break;
-			  case $yield == 'mails':
-				include('../views/admin/mails.html');
-				break;
-			  case $yield == 'mailnew';
-				include('../views/admin/mailnew.html');
-				break;
-			  case $yield == 'mailedit':
-				include('../views/admin/mailedit.html');
-				break;
-			  case $yield == 'notice':
-				include('../views/admin/notice.html');
-				break;
-			  case $yield == 'notices':
-				include('../views/admin/notices.html');
-				break;
-			  case $yield == 'noticenew':
-				include('../views/admin/noticenew.html');
-				break;
-			  case $yield == 'noticeedit':
-				include('../views/admin/noticeedit.html');
+			  case in_array($yield, array(
+			  				null, 'index', 'login',
+				  			'usershow', 'users', 'usernew', 'useredit', 
+				  			'mailshow', 'mails', 'mailnew', 'mailedit', 
+				  			'noticeshow', 'notices', 'noticenew', 'noticeedit', 
+				  			'documentshow', 'documents', 'documentedit'
+		  				)):
+				include('../views/admin/' . $yield . '.html');
 				break;
 			  default:
 				include('404.html');

@@ -26,68 +26,103 @@
   <script src="../assets/js/selectize.js"></script>
   <script src="../assets/js/main.js"></script>
   <!-- selectize end -->
+  <!-- summernote -->
+  <!-- source: http://summernote.org/ -->
+  <link rel="stylesheet" href="../assets/css/summernote.css" type="text/css"/>
+  <script src="../assets/js/summernote.min.js"></script>
+  <script src="../assets/js/summernote-tr-TR.js"></script>
+  <!-- summernote end -->
 </head>
 <body>
      <?php
-      $_outbox = "select
-		    group_concat(receive_user.email SEPARATOR ',') as email, 
-		    m.id as id,
-		    m.subject as subject,
-		    m.content as content,
-		    m.created_at
-		  from
-		    Users sender_user,
-		    Users receive_user,
-		    Mails m,
-		    Recipients r
-		  where
-		    sender_user.id = '" . $_SESSION['id'] . "' and
-		    m.user_id = sender_user.id and
-		    r.mail_id = m.id and
-		    r.user_id = receive_user.id 
-		  group by m.id";
+	$_outbox_result = mysql_query("
+					select
+						group_concat(receive_user.email SEPARATOR ',') as email, 
+						m.id as id,
+						m.subject as subject,
+						m.content as content,
+						m.created_at
+					from
+						Users sender_user,
+						Users receive_user,
+						Mails m,
+						Recipients r
+					where
+						sender_user.id = '" . $_SESSION['id'] . "' and
+						m.user_id = sender_user.id and
+						r.mail_id = m.id and
+						r.user_id = receive_user.id 
+						group by m.id
+					");
 
-      $_inbox = "select
-		   sender_user.email as email,
-		   m.id as id,
-		   m.subject as subject,
-		   m.content as content,
-		   m.created_at
-		 from
-		   Users sender_user,
-		   Users receive_user,
-		   Mails m,
-		   Recipients r
-		 where
-		    m.user_id = sender_user.id and
-		    m.id = r.mail_id and
-		    r.user_id = receive_user.id and
-		    receive_user.id = '" . $_SESSION['id'] . "'";
+	$_inbox_result = mysql_query("
+					select
+						sender_user.email as email,
+						m.id as id,
+						m.subject as subject,
+						m.content as content,
+						m.created_at
+					from
+						Users sender_user,
+						Users receive_user,
+						Mails m,
+						Recipients r
+					where
+						m.user_id = sender_user.id and
+						m.id = r.mail_id and
+						r.user_id = receive_user.id and
+						receive_user.id = '" . $_SESSION['id'] . "'
+					");
+
+
+	$_mails_result = mysql_query("
+					select
+						m.id as id,
+						m.subject as subject,
+						m.user_id as sender_id
+					from
+						Mails m,
+						Recipients r
+					where
+						(m.user_id = '" . $_SESSION['id'] . "' or r.user_id = '" . $_SESSION['id'] . "' ) and
+						r.mail_id = m.id
+						group by m.id
+					");
+
+	$_document_result = mysql_query("
+					select 
+						d.id as id,
+						d.no as no,
+						d.url as url,
+						d.title as title,
+						d.document_order as document_order,
+						m.id as mail_id,
+						m.created_at as created_at,
+						concat(sender_user.first_name, ' ', sender_user.last_name) as sender_user_full_name
+					from
+						Users sender_user,
+						Documents d,
+						Mails m,
+						Recipients r
+					where
+						m.user_id = sender_user.id and
+						(m.user_id = '" . $_SESSION['id'] . "' or r.user_id = '" . $_SESSION['id'] . "' ) and
+						r.mail_id = m.id and
+						d.mail_id = m.id 
+						group by d.id order by d.document_order desc
+					");
+
+	for ($_documents = array(); $row = mysql_fetch_assoc($_document_result);)
+		array_push($_documents, $row);
 	
-      
-	$_mails = "select
-		    m.id as id,
-		    m.subject as subject,
-		    m.user_id as sender_id
-		   from
-		    Mails m,
-		    Recipients r
-		   where
-		    (m.user_id = '" . $_SESSION['id'] . "' or r.user_id = '" . $_SESSION['id'] . "' ) and
-		    r.mail_id = m.id
-		  group by m.id";
+	for ($_user_mails = array(); $row = mysql_fetch_assoc($_mails_result);)
+		array_push($_user_mails, $row);
 
-      $_mails_result = mysql_query($_mails);
-      for ($_user_mails = array(); $row = mysql_fetch_assoc($_mails_result);)
-	      array_push($_user_mails, $row);
+	for ($_inbox_mails = array(); $row = mysql_fetch_assoc($_inbox_result);)
+		array_push($_inbox_mails, $row);
 
-      $_inbox_result = mysql_query($_inbox);
-      for ($_inbox_mails = array(); $row = mysql_fetch_assoc($_inbox_result);)
-	      array_push($_inbox_mails, $row);
-
-      $_outbox_result = mysql_query($_outbox);
-      for ($_outbox_mails = array(); $row = mysql_fetch_assoc($_outbox_result);)
-	      array_push($_outbox_mails, $row);
+	for ($_outbox_mails = array(); $row = mysql_fetch_assoc($_outbox_result);)
+		array_push($_outbox_mails, $row);
       ?>
   <div class="container">
     <?php include 'user_navbar.html'; ?>
@@ -100,10 +135,9 @@
 		<option value="">Bir konu ara...</option>
 		<?php
 			foreach ($_user_mails as $mail)
-			if ($mail["sender_id"] == $_SESSION["id"]) 
-				echo "<option value='" . $PATH . "/user/index.php?yield=outmail&id=" . $mail["id"] . "'>" .$mail["subject"] . "</option>";
-			else
-				echo "<option value='" . $PATH . "/user/index.php?yield=inmail&id=" . $mail["id"] . "'>" .$mail["subject"] . "</option>";
+				echo "<option value='" . $PATH . "/user/index.php?yield=mailshow&id=" . $mail["id"] . "'>"
+					. $mail["subject"] .
+					"</option>";
 		?>
 		</select>
 		<script>
@@ -128,9 +162,8 @@
 		Anasayfa
 	      </a>
 	    </li>
-
 	    <li role="presentation">
-	      <a href="<?php echo $PATH ;?>/user/index.php?yield=write" class="fa fa-edit">
+	      <a href="<?php echo $PATH ;?>/user/index.php?yield=mailnew" class="fa fa-edit">
 		Yaz
 	      </a>
 	    </li>
@@ -146,48 +179,33 @@
 		<span class="badge"><?php echo count($_outbox_mails) ?></span>
 	      </a>
 	    </li>
+	    <li role="presentation">
+	      <a href="<?php echo $PATH ;?>/user/index.php?yield=documents" class="fa fa-th-list">
+		Rapor Listesi
+		<span class="badge"><?php echo count($_documents) ?></span>
+	      </a>
+	    </li>
 	  </ul>
 	</div>
 	<div class="col-xs-8 col-md-9">
 	  <?php
-		  $yield = isset($_GET['yield']) ? $_GET['yield'] : null;
+		$yield = isset($_GET['yield']) ? $_GET['yield'] : null;
 
-		  switch (true) {
-			  case in_array($yield, array(null, 'index')):
-				include('../views/user/index.html');
-				break;
-			  case $yield == 'new':
-				include('../views/user/new.html');
-				break;
-			  case $yield == 'login':
-				include('../views/user/login.html');
-				break;
-			  case $yield == 'inmail':
-				include('../views/user/inmail.html');
-				break;
-			  case $yield == 'outmail':
-				include('../views/user/outmail.html');
-				break;
-			  case $yield == 'inbox':
-				include('../views/user/inbox.html');
-				break;
-			  case $yield == 'outbox':
-				include('../views/user/outbox.html');
-				break;
-			  case $yield == 'write':
-				include('../views/user/write.html');
-				break;
-			  case $yield == 'accountshow':
-				include('../views/user/accountshow.html');
-				break;
-			  case $yield == 'accountedit':
-				include('../views/user/accountedit.html');
-				break;
-			  default:
-				include('404.html');
-		  }
+		switch (true) {
+		  case in_array($yield,  array(
+						null, 'index', 'login',
+						'new',
+						'documents',
+						'inbox', 'outbox',
+						'mailnew', 'mailshow', 'mailforward',
+						'accountshow', 'accountedit',
+						)):
+			include('../views/user/' . $yield . '.html');
+			break;
+		  default:
+			include('404.html');
+		}
 	  ?>
-
         </div>
       </div>
     </div>

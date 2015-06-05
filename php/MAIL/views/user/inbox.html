@@ -18,27 +18,27 @@
       <th>Konu</th>
       <th>İçerik</th>
       <th>Tarih</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     <?php 
       foreach ($_inbox_mails as $mail) {
-      echo   "<tr href='". $PATH . "/user/index.php?yield=inmail&id=" . $mail['id'] . "'>
+      echo   "<tr>
 	      <td>" . $mail['email'] .      "</td>
 	      <td>" . $mail['subject'] .    "</td>
 	      <td>" . $mail['content'] .    "</td>
    	      <td>" . $mail['created_at'] . "</td>
+   	       <td>
+		<a href='$PATH/user/index.php?yield=mailshow&id=" . $mail['id'] . "'
+			class='btn btn-default' role='button' title='Göster'><i class='fa fa-search'></i></a>
+		<a href='$PATH/user/index.php?yield=mailforward&id=" . $mail['id'] . "'
+			class='btn btn-default' role='button' title='Yönlendir'><i class='fa fa-share'></i></a>
+	      </td>
 	      </tr>";
       }
     ?>
   </tbody>
 </table>
 </div>
-<script>
-$(document).ready(function(){
-    $('table tbody tr').click(function(){
-        window.location = $(this).attr('href');
-        return false;
-    });
-});
-</script>
+

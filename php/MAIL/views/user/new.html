@@ -1,17 +1,16 @@
 <?php
 
 $_user_type_id_result = mysql_query("select * from User_Types where not id=1");
-while ($row = mysql_fetch_assoc($_user_type_id_result))
-      $_user_type_ids[] = $row;
+for ($_user_type_ids = array(); $row = mysql_fetch_assoc($_user_type_id_result);)
+	array_push($_user_type_ids, $row);
 
 $_department_result = mysql_query("select * from Departments");
-while ($row = mysql_fetch_assoc($_department_result))
-      $_departments[] = $row;
+for ($_departments = array(); $row = mysql_fetch_assoc($_department_result);)
+	array_push($_departments, $row);
 
 $_gender_result = mysql_query("select * from Genders");
-while ($row = mysql_fetch_assoc($_gender_result))
-      $_genders[] = $row;
-
+for ($_genders = array(); $row = mysql_fetch_assoc($_gender_result);)
+	array_push($_genders, $row);
 ?>
 
 <form class="login-form" action="<?php echo $PATH ;?>/controllers/user/new.php" accept-charset="UTF-8" method="post">

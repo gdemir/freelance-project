@@ -17,30 +17,36 @@
   <script src="../assets/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <?php include 'default_navbar.html'; ?>
-  <div class="container" style="width:400px;min-height:200px;">
-    <?php include 'notice.html'; ?>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-	  Kullanıcı Girişi
-        </h3>
-      </div>
-      <div class="panel-body">
-      <?php
-	      $yield = isset($_GET['yield']) ? $_GET['yield'] : null;
-	      if ($yield == null)
-	      	  include('404.html');
-	      else {
-		  $p = pathinfo($_SERVER['REQUEST_URI']);
-		  $dirname = pathinfo($p['dirname'])['filename'];
-		  include('../views/'.$dirname.'/'.$p['filename'].'.html');
-	      } 
-      ?>
-      </div>
-      <div class="panel-footer">
-	MAIL System Copyright 2015
-      </div>
-    </div>
+	<div class="container" style="width:500px; min-height:200px; margin-top: 8%; ">
+		<?php include 'notice.html'; ?>
+		<div class="panel panel-default" style="box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);">
+			<div class="panel-heading">
+				<h3 class="panel-title">Kullanıcı Girişi</h3>
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-xs-3">
+						<a target="_blank" href="<?php echo $PATH; ?>/home" title="Teiaş">
+											<i class="fa fa-envelope fa-5x"></i>
+
+					</a>
+					</div>
+					<div class="col-xs-9">
+						<?php
+							$yield = isset($_GET['yield']) ? $_GET['yield'] : null;
+							if ($yield == null)
+								include('404.html');
+							else {
+								$p = pathinfo($_SERVER['REQUEST_URI']);
+								$dirname = pathinfo($p['dirname'])['filename'];
+								include('../views/'.$dirname.'/'.$p['filename'].'.html');
+							} 
+						?>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer">MAIL System Copyright 2015</div>
+		</div>
+	</div>
   </body>
 </html>

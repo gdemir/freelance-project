@@ -12,5 +12,5 @@ mysql_query("insert into Notices
 $notice_id = mysql_insert_id();
 
 $_SESSION['success'] = "Yeni kayıt oluşturuldu";
-header('Location: ' . $PATH . "/admin/index.php?yield=notice&id=$notice_id");
+header('Location: ' . $PATH . "/admin/index.php?yield=noticeshow&id=$notice_id");
 ?>

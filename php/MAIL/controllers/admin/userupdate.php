@@ -23,5 +23,5 @@ mysql_query("update Users set
 	     where id='$id'");
 
 $_SESSION['success'] = "Kullanıcı güncellendi";
-header('Location: ' . $PATH . '/admin/index.php?yield=user&id=' . $id);
+header('Location: ' . $PATH . '/admin/index.php?yield=usershow&id=' . $id);
 ?>

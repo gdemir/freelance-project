@@ -1,5 +1,10 @@
 <?php
-
+function security($posts) {
+	foreach ($posts as $key => $value)
+		if ($key != "recipient_emails" and $key != "documents")
+			$posts[$key] = mysql_real_escape_string($value);
+	return $posts;
+}
 function connect($_host, $_user, $_pass, $_name) {
 	if (!($connector = mysql_connect($_host, $_user, $_pass)))
 		die("error : db user or password is wrong<br/>");
@@ -17,7 +22,10 @@ function clear_notice_session() {
 		unset($_SESSION[$key]);
 }
 $PATH = "/MAIL";
-connect('localhost', 'root', '12345', 'MAIL');
+connect('localhost', 'root', '123456', 'MAIL');
+
+if (isset($_POST))
+	$_POST = security($_POST);
 
 if (!strlen(session_id()))
 	session_start();

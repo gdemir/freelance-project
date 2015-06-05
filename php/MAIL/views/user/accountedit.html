@@ -1,20 +1,24 @@
 <?php
-$user = mysql_fetch_assoc(
-		mysql_query("select
-			      ut.name as uname,
-			      d.name as dname,
-			      g.name as gname,
-			      u.email as email,
-			      u.first_name as first_name,
-			      u.last_name as last_name,
-			      u.password as password
-			     from
-			      Users u, User_Types ut, Departments d, Genders g
-			     where
-			      u.gender_id = g.id and
-			      u.department_id = d.id and
-			      u.user_type_id = ut.id and
-			      u.id = '" . $_SESSION['id'] . "'"));
+$user = mysql_fetch_assoc(mysql_query("
+						select
+							ut.name as uname,
+							d.name as dname,
+							g.name as gname,
+							u.email as email,
+							u.first_name as first_name,
+							u.last_name as last_name,
+							u.password as password
+						from
+							Users u,
+							User_Types ut,
+							Departments d,
+							Genders g
+						where
+							u.gender_id = g.id and
+							u.department_id = d.id and
+							u.user_type_id = ut.id and
+							u.id = '" . $_SESSION['id'] . "'
+						"));
 ?>
 <form class="login-form" action="<?php echo $PATH ;?>/controllers/user/accountupdate.php" accept-charset="UTF-8" method="post">
   <input type="text" value="<?php echo $user['uname']; ?>" class="form-control" size="50" name="uname" id="uname" disabled/>

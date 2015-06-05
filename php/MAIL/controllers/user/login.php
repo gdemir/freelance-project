@@ -17,8 +17,11 @@ if ($record) {
 	if ($record['user_type_id'] != 3) // Öğrenci değilse süper
 		$_SESSION['superuser'] = true;
 
-	$_SESSION['fullname'] = $record['first_name'] . " " . $record['last_name'];
 	$_SESSION['id'] = $record['id'];
+	$_SESSION['fullname'] = $record['first_name'] . " " . $record['last_name'];
+
+	$department = mysql_fetch_assoc(mysql_query("select * from Departments where id = '". $record["department_id"] . "'"));
+	$_SESSION['department'] = $department["name"];
 
 	header('Location: ' . $PATH . '/user/index.php');
 } else {

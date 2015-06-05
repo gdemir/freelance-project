@@ -1,25 +1,25 @@
 <?php
 
-$_mail = "select
-	   group_concat(receive_user.email SEPARATOR ',') as receive_email, 
-	   sender_user.email as sender_email,
-	   m.id as id,
-	   m.subject as subject,
-	   m.content as content,
-	   m.created_at as created_at,
-	   m.updated_at as updated_at
-	 from
-	   Users sender_user,
-	   Users receive_user,
-	   Mails m,
-	   Recipients r
-	 where
-	   m.user_id = sender_user.id and
-	   r.mail_id = m.id and
-	   r.user_id = receive_user.id 
-	 group by m.id";
-
-$_mail_result = mysql_query($_mail);
+$_mail_result = mysql_query("
+				select
+					group_concat(receive_user.email SEPARATOR ',') as receive_email, 
+					sender_user.email as sender_email,
+					m.id as id,
+					m.subject as subject,
+					m.content as content,
+					m.created_at as created_at,
+					m.updated_at as updated_at
+				from
+					Users sender_user,
+					Users receive_user,
+					Mails m,
+					Recipients r
+				where
+					m.user_id = sender_user.id and
+					r.mail_id = m.id and
+					r.user_id = receive_user.id 
+					group by m.id
+				 ");
 for ($_mails = array(); $row = mysql_fetch_assoc($_mail_result);)
       array_push($_mails, $row);
 ?>
@@ -46,6 +46,7 @@ for ($_mails = array(); $row = mysql_fetch_assoc($_mail_result);)
       <th>İçerik</th>
       <th>Oluştu</th>
       <th>Düzenlendi</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -54,7 +55,7 @@ for ($_mails = array(); $row = mysql_fetch_assoc($_mail_result);)
       foreach ($_mails as $mail) {
       if (strlen($mail['receive_email'])>25)
 	     $mail['receive_email'] = substr($mail['receive_email'],0,25) . "...";
-      echo "<tr href='" . $PATH . "/admin/index.php?yield=mail&id=" . $mail['id'] . "'>
+      echo "<tr>
 	    <td>" . $mail['id'] .            "</td>
 	    <td>" . $mail['sender_email'] .  "</td>
 	    <td>" . $mail['receive_email'] . "</td>
@@ -62,17 +63,20 @@ for ($_mails = array(); $row = mysql_fetch_assoc($_mail_result);)
 	    <td>" . $mail['content'] .       "</td>
    	    <td>" . $mail['created_at'] .    "</td>
    	    <td>" . $mail['updated_at'] .    "</td>
+   	    <td>
+   	    	<form action='" . $PATH . "/controllers/admin/userdel.php' method='post'>
+		<a href='$PATH/admin/index.php?yield=mailshow&id=" . $mail['id'] . "'
+			class='btn btn-default' role='button' title='Göster'><i class='fa fa-search'></i></a>
+		<input type='hidden' value='" . $mail["id"] . "' id='id' name='id'/>
+		<button type='submit' class='btn btn-default' 
+			onClick=\"return confirm('Bu maili silmek istediğinizden emin misiniz?');\" title='Sil'>
+	        		<i class='fa fa-trash'></i>
+		  </button>
+		</form>
+	    </td>
 	    </tr>";
       }
     ?>
   </tbody>
 </table>
 </div>
-<script>
-$(document).ready(function(){
-    $('table tbody tr').click(function(){
-        window.location = $(this).attr('href');
-        return false;
-    });
-});
-</script>

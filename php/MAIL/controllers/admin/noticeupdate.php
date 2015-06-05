@@ -11,5 +11,5 @@ mysql_query("update Notices set
 	     where id='$id'");
 
 $_SESSION['success'] = "Duyuru güncellendi";
-header('Location: ' . $PATH . '/admin/index.php?yield=notice&id=' . $id);
+header('Location: ' . $PATH . '/admin/index.php?yield=noticeshow&id=' . $id);
 ?>

@@ -26,5 +26,5 @@ mysql_query("insert into Users
 $user_id = mysql_insert_id();
 
 $_SESSION['success'] = "$email adresine ait yeni kayıt oluşturuldu";
-header('Location: ' . $PATH . "/admin/index.php?yield=user&id=$user_id");
+header('Location: ' . $PATH . "/admin/index.php?yield=usershow&id=$user_id");
 ?>
